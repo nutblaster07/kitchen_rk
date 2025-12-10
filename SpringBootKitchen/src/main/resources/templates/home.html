@@ -1,0 +1,551 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kitchen Equipment - Home</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', 'Segoe UI', sans-serif;
+            line-height: 1.6;
+            color: #1a1a1a;
+            background: #ffffff;
+        }
+
+        /* Header */
+        header {
+            background: rgba(255, 255, 255, 0.98);
+            backdrop-filter: blur(10px);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            box-shadow: 0 2px 20px rgba(0,0,0,0.08);
+        }
+
+        nav {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 1.2rem 3rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 2rem;
+            font-weight: 800;
+            color: #ff6b35;
+            letter-spacing: -1px;
+        }
+
+        .logo span {
+            color: #2d3748;
+        }
+
+        /* Hero Section */
+        .hero {
+            position: relative;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            overflow: hidden;
+            min-height: 85vh;
+            display: flex;
+            align-items: center;
+        }
+
+        .hero-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 4rem 3rem;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 4rem;
+            align-items: center;
+            position: relative;
+            z-index: 2;
+        }
+
+        .hero-text h1 {
+            font-size: 3.5rem;
+            margin-bottom: 1.5rem;
+            font-weight: 800;
+            line-height: 1.1;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+        }
+
+        .hero-text p {
+            font-size: 1.25rem;
+            margin-bottom: 2.5rem;
+            opacity: 0.95;
+            line-height: 1.8;
+        }
+
+        .hero-buttons {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .cta-button {
+            display: inline-block;
+            padding: 1rem 2.5rem;
+            background: #ff6b35;
+            color: white;
+            text-decoration: none;
+            border-radius: 12px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            transition: all 0.3s;
+            box-shadow: 0 4px 15px rgba(255, 107, 53, 0.4);
+        }
+
+        .cta-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 25px rgba(255, 107, 53, 0.5);
+            background: #ff5722;
+        }
+
+        .cta-button-secondary {
+            background: rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(10px);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .cta-button-secondary:hover {
+            background: rgba(255, 255, 255, 0.3);
+            box-shadow: 0 6px 25px rgba(255, 255, 255, 0.2);
+        }
+
+        .hero-images {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1.5rem;
+        }
+
+        .hero-image {
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+            transition: transform 0.3s;
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            aspect-ratio: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 4rem;
+        }
+
+        .hero-image:hover {
+            transform: scale(1.05);
+        }
+
+        .hero-image:nth-child(1) { background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); }
+        .hero-image:nth-child(2) { background: linear-gradient(135deg, #fa709a 0%, #fee140 100%); margin-top: 3rem; }
+        .hero-image:nth-child(3) { background: linear-gradient(135deg, #30cfd0 0%, #330867 100%); margin-top: -3rem; }
+        .hero-image:nth-child(4) { background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%); }
+
+        /* Product Carousel Section */
+        .products-section {
+            max-width: 1400px;
+            margin: 6rem auto;
+            padding: 0 3rem;
+        }
+
+        .section-header {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        .section-header h2 {
+            font-size: 2.5rem;
+            color: #2d3748;
+            margin-bottom: 1rem;
+            font-weight: 800;
+        }
+
+        .section-header p {
+            font-size: 1.1rem;
+            color: #718096;
+        }
+
+        .carousel-container {
+            position: relative;
+            overflow: hidden;
+            padding: 2rem 0;
+        }
+
+        .carousel {
+            display: flex;
+            gap: 2rem;
+            transition: transform 0.5s ease;
+        }
+
+        .product-card {
+            min-width: 320px;
+            background: white;
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+            transition: all 0.3s;
+            flex-shrink: 0;
+        }
+
+        .product-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 12px 40px rgba(0,0,0,0.15);
+        }
+
+        .product-image {
+            height: 240px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 5rem;
+        }
+
+        .product-card:nth-child(2) .product-image { background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); }
+        .product-card:nth-child(3) .product-image { background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); }
+        .product-card:nth-child(4) .product-image { background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%); }
+        .product-card:nth-child(5) .product-image { background: linear-gradient(135deg, #fa709a 0%, #fee140 100%); }
+
+        .product-info {
+            padding: 1.5rem;
+        }
+
+        .product-info h3 {
+            font-size: 1.3rem;
+            color: #2d3748;
+            margin-bottom: 0.5rem;
+            font-weight: 700;
+        }
+
+        .product-info p {
+            color: #718096;
+            margin-bottom: 1rem;
+            font-size: 0.95rem;
+        }
+
+        .product-price {
+            font-size: 1.5rem;
+            color: #ff6b35;
+            font-weight: 700;
+        }
+
+        .carousel-nav {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            margin-top: 2rem;
+        }
+
+        .carousel-btn {
+            width: 50px;
+            height: 50px;
+            border: none;
+            background: #667eea;
+            color: white;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 1.2rem;
+            transition: all 0.3s;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+        }
+
+        .carousel-btn:hover {
+            background: #764ba2;
+            transform: scale(1.1);
+        }
+
+        /* Features Section */
+        .features {
+            max-width: 1400px;
+            margin: 6rem auto;
+            padding: 0 3rem;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 2rem;
+        }
+
+        .feature-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 2.5rem;
+            border-radius: 20px;
+            text-align: center;
+            color: white;
+            transition: all 0.3s;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .feature-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0) 100%);
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .feature-card:hover::before {
+            opacity: 1;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 15px 40px rgba(102, 126, 234, 0.4);
+        }
+
+        .feature-card:nth-child(2) {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+        }
+
+        .feature-card:nth-child(3) {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+        }
+
+        .feature-icon {
+            font-size: 3.5rem;
+            margin-bottom: 1.5rem;
+            display: block;
+        }
+
+        .feature-card h3 {
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+            font-weight: 700;
+        }
+
+        .feature-card p {
+            opacity: 0.95;
+            line-height: 1.6;
+        }
+
+        /* Stats Section */
+        .stats-section {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 4rem 3rem;
+            margin: 6rem 0;
+        }
+
+        .stats {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 3rem;
+            text-align: center;
+            color: white;
+        }
+
+        .stat h3 {
+            font-size: 3rem;
+            font-weight: 800;
+            margin-bottom: 0.5rem;
+        }
+
+        .stat p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+
+        footer {
+            background: #2d3748;
+            color: white;
+            text-align: center;
+            padding: 3rem 2rem;
+        }
+
+        footer p {
+            opacity: 0.8;
+        }
+
+        @media (max-width: 968px) {
+            .hero-content {
+                grid-template-columns: 1fr;
+            }
+
+            .hero-text h1 {
+                font-size: 2.5rem;
+            }
+
+            .hero-images {
+                display: none;
+            }
+
+            .carousel {
+                padding: 0 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+<header>
+    <nav>
+        <div class="logo">RK<span>Kitchen</span></div>
+    </nav>
+</header>
+
+<section class="hero">
+    <div class="hero-content">
+        <div class="hero-text">
+            <h1>Premium Commercial Kitchen Equipment</h1>
+            <p>Elevate your culinary business with top-tier equipment designed for hotels, restaurants, and cafés. Quality that lasts, performance that delivers.</p>
+            <div class="hero-buttons">
+                <a href="/products" class="cta-button">Explore Products</a>
+                <a href="/contact" class="cta-button cta-button-secondary">Contact Us</a>
+            </div>
+        </div>
+        <div class="hero-images">
+            <div class="hero-image">🍳</div>
+            <div class="hero-image">🔥</div>
+            <div class="hero-image">🍴</div>
+            <div class="hero-image">☕</div>
+        </div>
+    </div>
+</section>
+
+<section class="products-section">
+    <div class="section-header">
+        <h2>Featured Equipment</h2>
+        <p>Discover our most popular commercial kitchen solutions</p>
+    </div>
+    <div class="carousel-container">
+        <div class="carousel" id="carousel">
+            <div class="product-card">
+                <div class="product-image">🍳</div>
+                <div class="product-info">
+                    <h3>Commercial Range</h3>
+                    <p>Heavy-duty cooking range for high-volume kitchens</p>
+                    <div class="product-price">₹89,999</div>
+                </div>
+            </div>
+            <div class="product-card">
+                <div class="product-image">❄️</div>
+                <div class="product-info">
+                    <h3>Walk-In Freezer</h3>
+                    <p>Industrial-grade cold storage solution</p>
+                    <div class="product-price">₹2,49,999</div>
+                </div>
+            </div>
+            <div class="product-card">
+                <div class="product-image">🔪</div>
+                <div class="product-info">
+                    <h3>Prep Table</h3>
+                    <p>Stainless steel work station with storage</p>
+                    <div class="product-price">₹34,999</div>
+                </div>
+            </div>
+            <div class="product-card">
+                <div class="product-image">🥘</div>
+                <div class="product-info">
+                    <h3>Combi Oven</h3>
+                    <p>Versatile cooking with steam and convection</p>
+                    <div class="product-price">₹1,89,999</div>
+                </div>
+            </div>
+            <div class="product-card">
+                <div class="product-image">🍕</div>
+                <div class="product-info">
+                    <h3>Pizza Oven</h3>
+                    <p>Professional deck oven for perfect pizzas</p>
+                    <div class="product-price">₹1,29,999</div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="carousel-nav">
+        <button class="carousel-btn" onclick="prevSlide()">‹</button>
+        <button class="carousel-btn" onclick="nextSlide()">›</button>
+    </div>
+</section>
+
+<section class="stats-section">
+    <div class="stats">
+        <div class="stat">
+            <h3>500+</h3>
+            <p>Happy Clients</p>
+        </div>
+        <div class="stat">
+            <h3>2000+</h3>
+            <p>Products Delivered</p>
+        </div>
+        <div class="stat">
+            <h3>15+</h3>
+            <p>Years Experience</p>
+        </div>
+        <div class="stat">
+            <h3>24/7</h3>
+            <p>Support Available</p>
+        </div>
+    </div>
+</section>
+
+<section class="features">
+    <div class="feature-card">
+        <span class="feature-icon">🍳</span>
+        <h3>Premium Quality</h3>
+        <p>Top-grade commercial equipment built to withstand the demands of busy kitchens</p>
+    </div>
+    <div class="feature-card">
+        <span class="feature-icon">⚡</span>
+        <h3>Fast Delivery</h3>
+        <p>Quick turnaround on all orders with nationwide shipping and installation</p>
+    </div>
+    <div class="feature-card">
+        <span class="feature-icon">💼</span>
+        <h3>Business Solutions</h3>
+        <p>Customized packages and financing options tailored for your establishment</p>
+    </div>
+</section>
+
+<footer>
+    <p>&copy; 2024 RKKitchen Supply. All rights reserved.</p>
+</footer>
+
+<script>
+    let currentSlide = 0;
+    const carousel = document.getElementById('carousel');
+    const cards = document.querySelectorAll('.product-card');
+    const cardWidth = 320 + 32; // card width + gap
+
+    function updateCarousel() {
+        const offset = -currentSlide * cardWidth;
+        carousel.style.transform = `translateX(${offset}px)`;
+    }
+
+    function nextSlide() {
+        if (currentSlide < cards.length - 3) {
+            currentSlide++;
+            updateCarousel();
+        }
+    }
+
+    function prevSlide() {
+        if (currentSlide > 0) {
+            currentSlide--;
+            updateCarousel();
+        }
+    }
+
+    // Auto-scroll carousel
+    setInterval(() => {
+        if (currentSlide < cards.length - 3) {
+            nextSlide();
+        } else {
+            currentSlide = 0;
+            updateCarousel();
+        }
+    }, 5000);
+</script>
+</body>
+</html>

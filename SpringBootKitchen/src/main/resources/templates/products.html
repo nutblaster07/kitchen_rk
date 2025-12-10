@@ -1,0 +1,597 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Products - RKKitchen</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', 'Segoe UI', sans-serif;
+            background: #f8f9fa;
+            color: #1a1a1a;
+        }
+
+        /* Header */
+        header {
+            background: rgba(255, 255, 255, 0.98);
+            backdrop-filter: blur(10px);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            box-shadow: 0 2px 20px rgba(0,0,0,0.08);
+        }
+
+        nav {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 1.2rem 3rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 2rem;
+            font-weight: 800;
+            color: #ff6b35;
+            letter-spacing: -1px;
+        }
+
+        .logo span {
+            color: #2d3748;
+        }
+
+        .back-link {
+            color: #2d3748;
+            text-decoration: none;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: all 0.3s;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+        }
+
+        .back-link:hover {
+            background: #f7fafc;
+            color: #ff6b35;
+        }
+
+        /* Page Header */
+        .page-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 4rem 3rem 3rem;
+            text-align: center;
+            color: white;
+        }
+
+        .page-header h1 {
+            font-size: 3rem;
+            font-weight: 800;
+            margin-bottom: 0.5rem;
+        }
+
+        .page-header p {
+            font-size: 1.2rem;
+            opacity: 0.95;
+        }
+
+        /* Filter Section */
+        .filter-section {
+            max-width: 1400px;
+            margin: -2rem auto 2rem;
+            padding: 0 3rem;
+            position: relative;
+            z-index: 10;
+        }
+
+        .filter-bar {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 15px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .selected-count {
+            font-size: 1rem;
+            color: #718096;
+            font-weight: 600;
+        }
+
+        .selected-count span {
+            color: #ff6b35;
+            font-size: 1.5rem;
+            font-weight: 800;
+        }
+
+        .filter-actions {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .btn-clear {
+            padding: 0.7rem 1.5rem;
+            background: #f7fafc;
+            color: #2d3748;
+            border: 2px solid #e2e8f0;
+            border-radius: 10px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .btn-clear:hover {
+            background: #edf2f7;
+            border-color: #cbd5e0;
+        }
+
+        /* Container */
+        .container {
+            max-width: 1400px;
+            margin: 3rem auto;
+            padding: 0 3rem;
+        }
+
+        /* Products Grid */
+        .products-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 2rem;
+            margin-bottom: 4rem;
+        }
+
+        .product-card {
+            background: white;
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            border: 2px solid transparent;
+        }
+
+        .product-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 15px 50px rgba(0,0,0,0.15);
+        }
+
+        .product-card.selected {
+            border-color: #ff6b35;
+            box-shadow: 0 8px 30px rgba(255, 107, 53, 0.3);
+        }
+
+        .product-image {
+            width: 100%;
+            height: 260px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 5rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .product-card:nth-child(2n) .product-image {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+        }
+
+        .product-card:nth-child(3n) .product-image {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+        }
+
+        .product-card:nth-child(4n) .product-image {
+            background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+        }
+
+        .selected-badge {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            background: #ff6b35;
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-weight: 700;
+            font-size: 0.85rem;
+            display: none;
+            box-shadow: 0 4px 15px rgba(255, 107, 53, 0.4);
+        }
+
+        .product-card.selected .selected-badge {
+            display: block;
+            animation: bounceIn 0.5s;
+        }
+
+        @keyframes bounceIn {
+            0% { transform: scale(0); }
+            50% { transform: scale(1.2); }
+            100% { transform: scale(1); }
+        }
+
+        .product-content {
+            padding: 1.8rem;
+        }
+
+        .product-content h3 {
+            color: #2d3748;
+            margin-bottom: 0.8rem;
+            font-size: 1.4rem;
+            font-weight: 700;
+        }
+
+        .product-content p {
+            color: #718096;
+            margin-bottom: 1.5rem;
+            line-height: 1.6;
+            font-size: 0.95rem;
+        }
+
+        .checkbox-container {
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+            cursor: pointer;
+            padding: 1rem;
+            background: #f7fafc;
+            border-radius: 12px;
+            transition: all 0.3s;
+        }
+
+        .checkbox-container:hover {
+            background: #edf2f7;
+        }
+
+        .checkbox-container input[type="checkbox"] {
+            width: 22px;
+            height: 22px;
+            cursor: pointer;
+            accent-color: #ff6b35;
+        }
+
+        .checkbox-container label {
+            cursor: pointer;
+            color: #2d3748;
+            font-weight: 600;
+            font-size: 0.95rem;
+        }
+
+        /* Quote Section */
+        .quote-section {
+            background: white;
+            padding: 3rem;
+            border-radius: 25px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+            margin-top: 4rem;
+            border: 2px solid #f7fafc;
+        }
+
+        .quote-section h2 {
+            color: #2d3748;
+            margin-bottom: 0.5rem;
+            text-align: center;
+            font-size: 2rem;
+            font-weight: 800;
+        }
+
+        .quote-section .subtitle {
+            text-align: center;
+            color: #718096;
+            margin-bottom: 2.5rem;
+            font-size: 1.05rem;
+        }
+
+        .form-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .form-group label {
+            color: #2d3748;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            font-size: 0.95rem;
+        }
+
+        .form-group input {
+            padding: 1rem;
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            font-size: 1rem;
+            transition: all 0.3s;
+            background: #f7fafc;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: #ff6b35;
+            background: white;
+            box-shadow: 0 0 0 3px rgba(255, 107, 53, 0.1);
+        }
+
+        .submit-button {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 1.2rem;
+            background: linear-gradient(135deg, #ff6b35 0%, #ff5722 100%);
+            color: white;
+            border: none;
+            border-radius: 15px;
+            font-size: 1.2rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 8px 25px rgba(255, 107, 53, 0.3);
+            position: relative;
+            overflow: hidden;
+            display: block;
+            width: 100%;
+        }
+
+        .submit-button::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+            transition: left 0.5s;
+        }
+
+        .submit-button:hover::before {
+            left: 100%;
+        }
+
+        .submit-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 35px rgba(255, 107, 53, 0.4);
+        }
+
+        .submit-button:active {
+            transform: translateY(0);
+        }
+
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 4rem 2rem;
+            color: #718096;
+        }
+
+        .empty-state-icon {
+            font-size: 5rem;
+            margin-bottom: 1rem;
+            opacity: 0.5;
+        }
+
+        .empty-state h3 {
+            font-size: 1.5rem;
+            color: #2d3748;
+            margin-bottom: 0.5rem;
+        }
+
+        footer {
+            background: #2d3748;
+            color: white;
+            text-align: center;
+            padding: 3rem 2rem;
+            margin-top: 6rem;
+        }
+
+        footer p {
+            opacity: 0.8;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .page-header h1 {
+                font-size: 2rem;
+            }
+
+            .products-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .filter-bar {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .filter-actions {
+                width: 100%;
+            }
+
+            .btn-clear {
+                flex: 1;
+            }
+
+            .quote-section {
+                padding: 2rem 1.5rem;
+            }
+
+            nav {
+                padding: 1rem 1.5rem;
+            }
+
+            .container {
+                padding: 0 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+<header>
+    <nav>
+        <div class="logo">RK<span>Kitchen</span></div>
+        <a href="/" class="back-link">← Back to Home</a>
+    </nav>
+</header>
+
+<div class="page-header">
+    <h1>Our Premium Products</h1>
+    <p>Select the equipment you need and request a custom quotation</p>
+</div>
+
+<div class="filter-section">
+    <div class="filter-bar">
+        <div class="selected-count">
+            Selected: <span id="selectedCount">0</span> items
+        </div>
+        <div class="filter-actions">
+            <button type="button" class="btn-clear" onclick="clearSelection()">Clear All</button>
+        </div>
+    </div>
+</div>
+
+<div class="container">
+    <form action="/request-quote" method="post" id="quoteForm">
+        <div class="products-grid" id="productsGrid">
+            <div class="product-card" th:each="p : ${products}">
+                <div class="selected-badge">✓ Selected</div>
+                <img th:src="@{/images1/} + ${p.imageUrl}" th:alt="${p.name}" class="product-image">
+                <div class="product-content">
+                    <h3 th:text="${p.name}">Commercial Range</h3>
+                    <p th:text="${p.description}">Heavy-duty cooking range for high-volume kitchens</p>
+                    <div class="checkbox-container" onclick="toggleCard(this)">
+                        <input type="checkbox" name="productNames" th:value="${p.name}" th:id="'product-' + ${p.id}" onchange="updateCount()">
+                        <label th:for="'product-' + ${p.id}">Select for Quote</label>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="quote-section" id="quoteSection">
+            <h2>Request Your Quotation</h2>
+            <p class="subtitle">Fill in your details and we'll get back to you within 24 hours</p>
+            <div class="form-grid">
+                <div class="form-group">
+                    <label for="name">Full Name *</label>
+                    <input id="name" name="name" placeholder="Enter your name" required>
+                </div>
+                <div class="form-group">
+                    <label for="phone">Phone Number *</label>
+                    <input id="phone" name="phone" type="tel" placeholder="Enter phone number" required>
+                </div>
+                <div class="form-group">
+                    <label for="email">Email Address *</label>
+                    <input id="email" name="email" type="email" placeholder="Enter email address" required>
+                </div>
+                <div class="form-group">
+                    <label for="businessName">Business/Hotel Name</label>
+                    <input id="businessName" name="businessName" placeholder="Enter business name">
+                </div>
+                <div class="form-group">
+                    <label for="city">City *</label>
+                    <input id="city" name="city" placeholder="Enter your city" required>
+                </div>
+            </div>
+            <button type="submit" class="submit-button">Request Quotation</button>
+        </div>
+    </form>
+</div>
+
+<footer>
+    <p>&copy; 2024 RKKitchen Supply. All rights reserved.</p>
+</footer>
+
+<script>
+    // Toggle card selection
+    function toggleCard(container) {
+        const checkbox = container.querySelector('input[type="checkbox"]');
+        const card = container.closest('.product-card');
+
+        if (checkbox.checked) {
+            card.classList.add('selected');
+        } else {
+            card.classList.remove('selected');
+        }
+    }
+
+    // Update selected count
+    function updateCount() {
+        const checkboxes = document.querySelectorAll('input[name="productNames"]:checked');
+        const count = checkboxes.length;
+        document.getElementById('selectedCount').textContent = count;
+
+        // Update all card states
+        document.querySelectorAll('.product-card').forEach(card => {
+            const checkbox = card.querySelector('input[type="checkbox"]');
+            if (checkbox.checked) {
+                card.classList.add('selected');
+            } else {
+                card.classList.remove('selected');
+            }
+        });
+    }
+
+    // Clear all selections
+    function clearSelection() {
+        const checkboxes = document.querySelectorAll('input[name="productNames"]');
+        checkboxes.forEach(checkbox => {
+            checkbox.checked = false;
+        });
+        document.querySelectorAll('.product-card').forEach(card => {
+            card.classList.remove('selected');
+        });
+        updateCount();
+    }
+
+    // Initialize on page load
+    document.addEventListener('DOMContentLoaded', function() {
+        updateCount();
+
+        // Add click handler to checkbox containers
+        document.querySelectorAll('.checkbox-container').forEach(container => {
+            container.addEventListener('click', function(e) {
+                if (e.target.type !== 'checkbox') {
+                    const checkbox = this.querySelector('input[type="checkbox"]');
+                    checkbox.checked = !checkbox.checked;
+                    toggleCard(this);
+                    updateCount();
+                }
+            });
+        });
+
+        // Smooth scroll to quote section when product is selected
+        document.querySelectorAll('input[name="productNames"]').forEach(checkbox => {
+            checkbox.addEventListener('change', function() {
+                if (this.checked) {
+                    const firstChecked = document.querySelectorAll('input[name="productNames"]:checked').length === 1;
+                    if (firstChecked) {
+                        setTimeout(() => {
+                            document.getElementById('quoteSection').scrollIntoView({
+                                behavior: 'smooth',
+                                block: 'nearest'
+                            });
+                        }, 300);
+                    }
+                }
+            });
+        });
+    });
+</script>
+</body>
+</html>

@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Your Cart</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f5f5f5;
+            color: #333;
+        }
+
+        header {
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            color: white;
+            padding: 1.5rem 0;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        nav {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+
+        .logo {
+            font-size: 1.8rem;
+            font-weight: bold;
+        }
+
+        .logo span {
+            color: #ffd700;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 3rem auto;
+            padding: 0 2rem;
+        }
+
+        .cart-card {
+            background: white;
+            border-radius: 10px;
+            padding: 2rem;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        h1 {
+            color: #1e3c72;
+            margin-bottom: 2rem;
+            text-align: center;
+        }
+
+        .cart-item {
+            padding: 1rem;
+            border-bottom: 1px solid #e0e0e0;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .cart-item:last-child {
+            border-bottom: none;
+        }
+
+        .item-icon {
+            font-size: 2rem;
+        }
+
+        .item-text {
+            flex: 1;
+            font-size: 1.1rem;
+            color: #333;
+        }
+
+        .empty-cart {
+            text-align: center;
+            padding: 3rem;
+            color: #999;
+        }
+
+        .empty-cart-icon {
+            font-size: 5rem;
+            margin-bottom: 1rem;
+        }
+
+        .proceed-button {
+            display: block;
+            width: 100%;
+            padding: 1rem;
+            margin-top: 2rem;
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            color: white;
+            text-align: center;
+            text-decoration: none;
+            border-radius: 5px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            transition: transform 0.3s;
+        }
+
+        .proceed-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(30, 60, 114, 0.3);
+        }
+
+        footer {
+            background: #2c3e50;
+            color: white;
+            text-align: center;
+            padding: 2rem;
+            margin-top: 4rem;
+        }
+    </style>
+</head>
+<body>
+<header>
+    <nav>
+        <div class="logo">Pro<span>Kitchen</span></div>
+    </nav>
+</header>
+
+<div class="container">
+    <div class="cart-card">
+        <h1>Selected Products</h1>
+
+        <div th:if="${selectedProducts != null and !selectedProducts.isEmpty()}">
+            <div class="cart-item" th:each="item : ${selectedProducts}">
+                <span class="item-icon">✓</span>
+                <span class="item-text" th:text="${item}">Product Name</span>
+            </div>
+            <a href="/request-quote" class="proceed-button">Proceed to Request Quote</a>
+        </div>
+
+        <div th:if="${selectedProducts == null or selectedProducts.isEmpty()}" class="empty-cart">
+            <div class="empty-cart-icon">🛒</div>
+            <p>Your cart is empty</p>
+        </div>
+    </div>
+</div>
+
+<footer>
+    <p>&copy; 2024 ProKitchen Supply. All rights reserved.</p>
+</footer>
+</body>
+</html>
+
